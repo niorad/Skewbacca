@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Skewbacca</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+  </head>
+  <body>
+
+
+    <div id="handle-wrapper" class="handle-wrapper" style="display: none;">
+      <img src="" id="main-image">
+      <button class="handle" draggable="true" id="topleft"><span>TL</span></button>
+      <button class="handle" draggable="true" id="topright"><span>TR</span></button>
+      <button class="handle" draggable="true" id="bottomright"><span>BR</span></button>
+      <button class="handle" draggable="true" id="bottomleft"><span>BL</span></button>
+    </div>
+
+    <div id="preview-wrapper">
+      Preview:
+      <img src="" id="preview-image">
+    </div>
+
+    <div class="buttons">
+      <button id="open">Open File..</button>
+      <button id="save">Save!</button>
+    </div>
+    <script>
+      require('./renderer.js')
+    </script>
+  </body>
+</html>

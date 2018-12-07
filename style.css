@@ -1,0 +1,108 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font: menu;
+  background: black;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.buttons button {
+  font: menu;
+  color: white;
+  border: 2px solid white;
+  background: black;
+  padding: 6px;
+  outline: 0;
+  border-radius: 5px;
+}
+
+.buttons button:hover {
+  color: #222;
+  background: white;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  padding: 5px;
+  justify-content: space-between;
+}
+
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+#preview-image {
+  width: 100px;
+  height: auto;
+}
+
+.handle-wrapper {
+  position: relative;
+}
+
+.handle {
+  position: absolute;
+  background: transparent;
+  color: white;
+  text-shadow: 0 0 2px black;
+  border: 0;
+  outline: 0;
+}
+
+.handle:hover::before {
+  border: 1px solid red;
+}
+
+.handle span {
+  display: block;
+  font-size: 18px;
+  transform: translate(0.7rem, -0.7rem);
+}
+
+.handle::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  margin-top: -15px;
+  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  content: " ";
+}
+
+.handle::after {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  background: white;
+  content: " ";
+}
+
+#topleft {
+  left: 33%;
+  top: 33%;
+}
+
+#topright {
+  left: 66%;
+  top: 33%;
+}
+#bottomright {
+  left: 66%;
+  top: 66%;
+}
+#bottomleft {
+  left: 33%;
+  top: 66%;
+}
