@@ -59,11 +59,11 @@ function generateConversionCommand(
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({ width: 500, height: 500 });
+  mainWindow = new BrowserWindow({ width: 700, height: 900 });
   mainWindow.loadFile("index.html");
   mainWindow.setResizable(false);
 
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   mainWindow.on("closed", function() {
     mainWindow = null;
   });

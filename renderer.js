@@ -25,12 +25,15 @@ ipcRenderer.on("file-opened", (event, file, content) => {
   console.log(file);
   openFile = file;
   document.getElementById("main-image").src = file;
-  handleWrapper.style.display = "block";
+  handleWrapper.style.opacity = "1";
 });
 
 ipcRenderer.on("file-saved", (event, targetFileName) => {
   console.log(targetFileName);
-  document.getElementById("preview-image").src = targetFileName;
+  document.getElementById("preview-image").src = "";
+  setTimeout(() => {
+    document.getElementById("preview-image").src = targetFileName;
+  }, 10);
 });
 
 handles.forEach(handle => {
