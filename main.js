@@ -49,6 +49,9 @@ function generateConversionCommand(
 ) {
   const longerSide = Math.max(natWidth, natHeight);
   const height = (longerSide / 100) * 69;
+
+  console.log(c, { natWidth, natHeight, longerSide, height });
+
   return `convert ${sourceFileName} \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
     c.TLX
   },${c.TLY} 0,0 ${c.BLX},${c.BLY} 0,${height}  ${c.BRX},${

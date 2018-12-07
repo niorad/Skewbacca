@@ -13,8 +13,6 @@ html {
 }
 
 .wrap {
-  /* display: flex; */
-  /* flex-direction: column; */
   height: 100%;
 }
 
@@ -23,7 +21,7 @@ html {
   color: white;
   border: 2px solid white;
   background: #222;
-  padding: 6px;
+  padding: 6px 12px;
   outline: 0;
   border-radius: 5px;
 }
@@ -38,7 +36,11 @@ html {
   display: flex;
   padding: 5px;
   justify-content: space-between;
-  min-height: 50px;
+  height: 50px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 #main-image {
@@ -50,11 +52,11 @@ html {
 }
 
 #preview-wrapper {
-  /* flex: 1; */
+  text-align: center;
 }
 
 #preview-image {
-  width: 100px;
+  width: 300px;
   height: auto;
 }
 
@@ -62,7 +64,7 @@ html {
   position: relative;
   overflow: hidden;
   display: inline-block;
-  height: 700px;
+  max-height: 700px;
   max-width: 700px;
 }
 

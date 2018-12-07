@@ -10,6 +10,7 @@ document.getElementById("open").addEventListener("click", () => {
 });
 
 document.getElementById("save").addEventListener("click", () => {
+  document.getElementById("preview-image").src = "";
   const nw = document.getElementById("main-image").naturalWidth;
   const nh = document.getElementById("main-image").naturalHeight;
   mainProcess.convert(
@@ -73,6 +74,5 @@ function percX(n) {
 
 function percY(n) {
   const nat = document.getElementById("main-image").naturalHeight;
-  console.log(n, handleWrapper.getBoundingClientRect().height, nat);
   return (n / handleWrapper.getBoundingClientRect().height) * nat;
 }
