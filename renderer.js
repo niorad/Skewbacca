@@ -1,8 +1,11 @@
 const { remote, ipcRenderer } = require("electron");
+const rndstr = require("randomstring");
 const mainProcess = remote.require("./main.js");
 
 const handles = document.querySelectorAll(".handle");
 const handleWrapper = document.getElementById("handle-wrapper");
+const canvas = document.getElementById("lines");
+const ctx = canvas.getContext("2d");
 let openFile = "";
 
 document.getElementById("open").addEventListener("click", () => {
@@ -15,7 +18,7 @@ document.getElementById("save").addEventListener("click", () => {
   const nh = document.getElementById("main-image").naturalHeight;
   mainProcess.convert(
     openFile,
-    "/Users/antonioradovcic/Desktop/hmpf.jpg",
+    `/Users/antonioradovcic/Desktop/skewbacca_${rndstr.generate(8)}.jpg`,
     getSkewCoordinates(),
     nw,
     nh
@@ -27,14 +30,16 @@ ipcRenderer.on("file-opened", (event, file, content) => {
   openFile = file;
   document.getElementById("main-image").src = file;
   handleWrapper.style.opacity = "1";
+  setTimeout(() => {
+    canvas.setAttribute("width", handleWrapper.offsetWidth);
+    canvas.setAttribute("height", handleWrapper.offsetHeight);
+    drawLines();
+  }, 0);
 });
 
 ipcRenderer.on("file-saved", (event, targetFileName) => {
   console.log(targetFileName);
   document.getElementById("preview-image").src = "";
-  setTimeout(() => {
-    document.getElementById("preview-image").src = targetFileName;
-  }, 10);
 });
 
 handles.forEach(handle => {
@@ -47,6 +52,7 @@ handles.forEach(handle => {
     if (!e.pageX && !e.pageY) return;
     e.target.style.top = e.pageY + "px";
     e.target.style.left = e.pageX + "px";
+    drawLines();
   });
   handle.addEventListener("dragstart", e => {
     const img = document.createElement("span");
@@ -75,4 +81,27 @@ function percX(n) {
 function percY(n) {
   const nat = document.getElementById("main-image").naturalHeight;
   return (n / handleWrapper.getBoundingClientRect().height) * nat;
+}
+
+function drawLines() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#FF0000";
+  ctx.lineWidth = 1;
+
+  const TLX = document.getElementById("topleft").offsetLeft;
+  const TLY = document.getElementById("topleft").offsetTop;
+  const TRX = document.getElementById("topright").offsetLeft;
+  const TRY = document.getElementById("topright").offsetTop;
+  const BRX = document.getElementById("bottomright").offsetLeft;
+  const BRY = document.getElementById("bottomright").offsetTop;
+  const BLX = document.getElementById("bottomleft").offsetLeft;
+  const BLY = document.getElementById("bottomleft").offsetTop;
+
+  ctx.beginPath();
+  ctx.lineTo(TLX, TLY);
+  ctx.lineTo(TRX, TRY);
+  ctx.lineTo(BRX, BRY);
+  ctx.lineTo(BLX, BLY);
+  ctx.lineTo(TLX, TLY);
+  ctx.stroke();
 }
