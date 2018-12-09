@@ -13,18 +13,20 @@ document.getElementById("open").addEventListener("click", () => {
   mainProcess.getFileFromUser();
 });
 
-document.getElementById("save").addEventListener("click", () => {
+document.getElementById("save").addEventListener("click", saveCurrentSelection);
+
+function saveCurrentSelection() {
   document.getElementById("preview-image").src = "";
   const nw = document.getElementById("main-image").naturalWidth;
   const nh = document.getElementById("main-image").naturalHeight;
   mainProcess.convert(
     openFile,
-    `/Users/antonioradovcic/Desktop/skewbacca_${rndstr.generate(8)}.jpg`,
+    `skewbacca_${rndstr.generate(8)}.jpg`,
     getSkewCoordinates(),
     nw,
     nh
   );
-});
+}
 
 ipcRenderer.on("file-opened", (event, file, content) => {
   console.log(file);
@@ -53,6 +55,7 @@ handles.forEach(handle => {
     e.target.style.left = e.pageX - handleWrapper.offsetLeft + "px";
     e.target.style.top = e.pageY - handleWrapper.offsetTop + "px";
     e.target.classList.remove("dragged");
+    saveCurrentSelection();
   });
   handle.addEventListener("drag", e => {
     if (!e.pageX && !e.pageY) return;
@@ -111,5 +114,4 @@ function drawLines() {
   ctx.lineTo(BLX, BLY);
   ctx.lineTo(TLX, TLY);
   ctx.stroke();
-  console.log("DRAWRING", TLX, TLY);
 }

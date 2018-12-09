@@ -1,6 +1,12 @@
-const { app, BrowserWindow, dialog } = require("electron");
+const { app, remote, BrowserWindow, dialog } = require("electron");
 const { exec } = require("child_process");
+const del = require("del");
+const path = require("path");
+const fs = require("fs");
 
+const userDataPath = (app || remote.app).getPath("userData");
+const filePath = path.join(userDataPath, "generated");
+fs.mkdir(filePath, () => {});
 let mainWindow;
 
 const getFileFromUser = (exports.getFileFromUser = () => {
@@ -28,14 +34,29 @@ const convert = (exports.convert = (
   nh
 ) => {
   console.log(
-    generateConversionCommand(sourceFileName, targetFileName, coords, nw, nh)
+    generateConversionCommand(
+      sourceFileName,
+      path.join(filePath, targetFileName),
+      coords,
+      nw,
+      nh
+    )
   );
   exec(
-    generateConversionCommand(sourceFileName, targetFileName, coords, nw, nh),
+    generateConversionCommand(
+      sourceFileName,
+      path.join(filePath, targetFileName),
+      coords,
+      nw,
+      nh
+    ),
     (err, stdout, stderr) => {
       console.log(stdout);
       console.log(stderr);
-      mainWindow.webContents.send("file-saved", targetFileName);
+      mainWindow.webContents.send(
+        "file-saved",
+        path.join(filePath, targetFileName)
+      );
     }
   );
 });
@@ -50,15 +71,20 @@ function generateConversionCommand(
   const longerSide = Math.max(natWidth, natHeight);
   const height = (longerSide / 100) * 69;
 
-  console.log(c, { natWidth, natHeight, longerSide, height });
+  console.log({ sourceFileName, targetFileName }, c, {
+    natWidth,
+    natHeight,
+    longerSide,
+    height
+  });
 
-  return `convert ${sourceFileName} \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
+  return `convert '${sourceFileName}' \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
     c.TLX
   },${c.TLY} 0,0 ${c.BLX},${c.BLY} 0,${height}  ${c.BRX},${
     c.BRY
   } ${longerSide},${height}  ${c.TRX},${
     c.TRY
-  } ${longerSide},0' -gravity Northwest -crop ${longerSide}x${height}+0+0 +repage ${targetFileName}`;
+  } ${longerSide},0' -gravity Northwest -crop ${longerSide}x${height}+0+0 +repage '${targetFileName}'`;
 }
 
 function createWindow() {
@@ -83,6 +109,10 @@ app.on("window-all-closed", function() {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+app.on("quit", function() {
+  del([filePath], { force: true });
 });
 
 app.on("activate", function() {

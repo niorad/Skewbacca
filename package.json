@@ -1,25 +1,19 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "Skewbacca",
+  "version": "0.1.0",
+  "description": "Skewing-Tool for DevLids",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "repository": "https://github.com/niorad/skewbbacca",
+  "author": "Antonio Radovcic",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^3.0.7"
   },
   "dependencies": {
+    "del": "^3.0.0",
     "randomstring": "^1.1.5"
   }
 }
