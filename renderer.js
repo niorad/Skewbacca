@@ -4,6 +4,7 @@ const mainProcess = remote.require("./main.js");
 
 const handles = document.querySelectorAll(".handle");
 const handleWrapper = document.getElementById("handle-wrapper");
+const mainImageContainer = document.getElementById("main-image");
 const canvas = document.getElementById("lines");
 const ctx = canvas.getContext("2d");
 let openFile = "";
@@ -28,36 +29,42 @@ document.getElementById("save").addEventListener("click", () => {
 ipcRenderer.on("file-opened", (event, file, content) => {
   console.log(file);
   openFile = file;
-  document.getElementById("main-image").src = file;
+  mainImageContainer.src = file;
+  mainImageContainer.addEventListener("dragstart", e => {
+    e.preventDefault();
+  });
+
   handleWrapper.style.opacity = "1";
   setTimeout(() => {
     canvas.setAttribute("width", handleWrapper.offsetWidth);
     canvas.setAttribute("height", handleWrapper.offsetHeight);
     drawLines();
-  }, 0);
+  }, 10);
 });
 
 ipcRenderer.on("file-saved", (event, targetFileName) => {
   console.log(targetFileName);
-  document.getElementById("preview-image").src = "";
+  document.getElementById("preview-image").src = targetFileName;
 });
 
 handles.forEach(handle => {
   handle.addEventListener("dragend", e => {
     if (!e.pageX && !e.pageY) return;
-    e.target.style.top = e.pageY + "px";
-    e.target.style.left = e.pageX + "px";
+    e.target.style.left = e.pageX - handleWrapper.offsetLeft + "px";
+    e.target.style.top = e.pageY - handleWrapper.offsetTop + "px";
+    e.target.classList.remove("dragged");
   });
   handle.addEventListener("drag", e => {
     if (!e.pageX && !e.pageY) return;
-    e.target.style.top = e.pageY + "px";
-    e.target.style.left = e.pageX + "px";
+    e.target.style.left = e.pageX - handleWrapper.offsetLeft + "px";
+    e.target.style.top = e.pageY - handleWrapper.offsetTop + "px";
     drawLines();
   });
   handle.addEventListener("dragstart", e => {
     const img = document.createElement("span");
     img.style.display = "none";
     e.dataTransfer.setDragImage(img, 0, 0);
+    e.target.classList.add("dragged");
   });
 });
 
@@ -104,4 +111,5 @@ function drawLines() {
   ctx.lineTo(BLX, BLY);
   ctx.lineTo(TLX, TLY);
   ctx.stroke();
+  console.log("DRAWRING", TLX, TLY);
 }

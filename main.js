@@ -62,7 +62,12 @@ function generateConversionCommand(
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({ width: 700, height: 900 });
+  mainWindow = new BrowserWindow({
+    width: 700,
+    height: 900,
+    fullscreenable: false,
+    titleBarStyle: "hiddenInset"
+  });
   mainWindow.loadFile("index.html");
   mainWindow.setResizable(false);
 

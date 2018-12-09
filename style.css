@@ -6,14 +6,11 @@ html {
   height: 100%;
   font: menu;
   background: #222;
+  -webkit-app-region: drag;
 }
 
 * {
   box-sizing: border-box;
-}
-
-.wrap {
-  height: 100%;
 }
 
 .buttons button {
@@ -37,10 +34,12 @@ html {
   padding: 5px;
   justify-content: space-between;
   height: 50px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
+}
+
+#stage {
+  height: 740px;
+  padding-top: 40px;
 }
 
 #main-image {
@@ -49,15 +48,18 @@ html {
   max-width: 700px;
   max-height: 700px;
   display: block;
+  pointer-events: none;
 }
 
 #preview-wrapper {
   text-align: center;
+  height: 100px;
 }
 
 #preview-image {
-  width: 300px;
+  width: 200px;
   height: auto;
+  -webkit-app-region: no-drag;
 }
 
 .handle-wrapper {
@@ -75,9 +77,11 @@ html {
   text-shadow: 0 0 2px black;
   border: 0;
   outline: 0;
+  -webkit-app-region: no-drag;
 }
 
-.handle:hover::before {
+.handle:hover::before,
+.handle.dragged::before {
   border: 1px solid red;
 }
 
@@ -91,13 +95,20 @@ html {
   position: absolute;
   left: 0;
   top: 0;
-  width: 30px;
-  height: 30px;
-  margin-left: -15px;
-  margin-top: -15px;
-  border-radius: 15px;
+  width: 50px;
+  height: 50px;
+  margin-left: -25px;
+  margin-top: -25px;
+  border-radius: 25px;
   background: rgba(0, 0, 0, 0.3);
   content: " ";
+  transition: 0.2s all;
+  -webkit-app-region: no-drag;
+}
+
+.handle.dragged::before {
+  transform: scale(1.5);
+  transition: 0.2s all;
 }
 
 .handle::after {
@@ -113,6 +124,10 @@ html {
 #topleft {
   left: 20%;
   top: 20%;
+}
+
+#topleft::before {
+  background: rgba(255, 0, 0, 0.3);
 }
 
 #topright {
