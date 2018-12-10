@@ -10,10 +10,3 @@ Only tested on OSX so far.
 
 - Placing four points on each corner of a lid via drag & drop
 - Generation and display of un-skewed image via ImageMagick
-
-## ToDo
-
-- Quicker generation of preview-image
-- Drag image into window and dock-icon
-- Remove boilerplate menu-entries
-- Enable arrow-keys for handles
