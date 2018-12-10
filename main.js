@@ -25,11 +25,19 @@ const getFileFromUser = (exports.getFileFromUser = () => {
   console.log(file);
 });
 
+const saveFileTo = () => {
+  const file = dialog.showSaveDialog(mainWindow, {
+    title: "Save Lid",
+    filters: [{ name: "JPEG", extensions: ["JPG"] }]
+  });
+  if (!file) return;
+  return file;
+};
+
 const openFile = file => {
   const originalFileName = path.basename(file);
   const previewFileName = "tmp_sbprev_" + originalFileName;
   activePreviewFile = path.join(filePath, previewFileName);
-
   exec(
     `convert '${file}' -resize ${previewSizePercent}% '${activePreviewFile}'`,
     (err, stdout, stderr) => {
@@ -38,21 +46,30 @@ const openFile = file => {
   );
 };
 
-const convert = (exports.convert = (targetFileName, coords, nw, nh) => {
-  console.log(
-    generateConversionCommand(
-      path.join(filePath, targetFileName),
-      coords,
-      nw,
-      nh
-    )
+const convertFull = (exports.convertFull = (coords, nw, nh) => {
+  const file = saveFileTo();
+  exec(
+    generateConversionCommand(file, coords, nw, nh, false),
+    (err, stdout, stderr) => {
+      console.log(stdout);
+      console.log(stderr);
+    }
   );
+});
+
+const convertPreview = (exports.convertPreview = (
+  targetFileName,
+  coords,
+  nw,
+  nh
+) => {
   exec(
     generateConversionCommand(
       path.join(filePath, targetFileName),
       coords,
       nw,
-      nh
+      nh,
+      true
     ),
     (err, stdout, stderr) => {
       console.log(stdout);
@@ -65,18 +82,19 @@ const convert = (exports.convert = (targetFileName, coords, nw, nh) => {
   );
 });
 
-function generateConversionCommand(targetFileName, c, natWidth, natHeight) {
+function generateConversionCommand(
+  targetFileName,
+  c,
+  natWidth,
+  natHeight,
+  isPreview
+) {
   const longerSide = Math.max(natWidth, natHeight);
   const height = (longerSide / 100) * 69;
 
-  console.log({ activePreviewFile, targetFileName }, c, {
-    natWidth,
-    natHeight,
-    longerSide,
-    height
-  });
-
-  return `convert '${activePreviewFile}' \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
+  return `convert '${
+    isPreview ? activePreviewFile : activeSourceFile
+  }' \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
     c.TLX
   },${c.TLY} 0,0 ${c.BLX},${c.BLY} 0,${height}  ${c.BRX},${
     c.BRY

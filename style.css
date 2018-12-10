@@ -1,11 +1,3 @@
-@font-face {
-  font-family: "Righteous";
-  src: url("font.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: fallback;
-}
-
 body,
 html {
   margin: 0;

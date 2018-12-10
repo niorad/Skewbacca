@@ -15,13 +15,19 @@ document.getElementById("open").addEventListener("click", () => {
 
 document
   .getElementById("save")
-  .addEventListener("click", previewCurrentSelection);
+  .addEventListener("click", convertCurrentSelection);
+
+function convertCurrentSelection() {
+  const nw = document.getElementById("main-image").naturalWidth;
+  const nh = document.getElementById("main-image").naturalHeight;
+  mainProcess.convertFull(getSkewCoordinates(1), nw, nh);
+}
 
 function previewCurrentSelection() {
   document.getElementById("preview-image").src = "";
   const nw = document.getElementById("main-image").naturalWidth;
   const nh = document.getElementById("main-image").naturalHeight;
-  mainProcess.convert(
+  mainProcess.convertPreview(
     `skewbacca_${rndstr.generate(8)}.jpg`,
     getSkewCoordinates(0.2),
     nw * 0.2,
