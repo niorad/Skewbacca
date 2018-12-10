@@ -6,6 +6,9 @@ const fs = require("fs");
 
 const userDataPath = (app || remote.app).getPath("userData");
 const filePath = path.join(userDataPath, "generated");
+let activeSourceFile;
+let activePreviewFile;
+const previewSizePercent = 20;
 fs.mkdir(filePath, () => {});
 let mainWindow;
 
@@ -17,25 +20,27 @@ const getFileFromUser = (exports.getFileFromUser = () => {
     return;
   }
   const file = files[0];
+  activeSourceFile = file;
   openFile(file);
   console.log(file);
 });
 
 const openFile = file => {
-  const content = "a";
-  mainWindow.webContents.send("file-opened", file, content);
+  const originalFileName = path.basename(file);
+  const previewFileName = "tmp_sbprev_" + originalFileName;
+  activePreviewFile = path.join(filePath, previewFileName);
+
+  exec(
+    `convert '${file}' -resize ${previewSizePercent}% '${activePreviewFile}'`,
+    (err, stdout, stderr) => {
+      mainWindow.webContents.send("file-opened", file, null);
+    }
+  );
 };
 
-const convert = (exports.convert = (
-  sourceFileName,
-  targetFileName,
-  coords,
-  nw,
-  nh
-) => {
+const convert = (exports.convert = (targetFileName, coords, nw, nh) => {
   console.log(
     generateConversionCommand(
-      sourceFileName,
       path.join(filePath, targetFileName),
       coords,
       nw,
@@ -44,7 +49,6 @@ const convert = (exports.convert = (
   );
   exec(
     generateConversionCommand(
-      sourceFileName,
       path.join(filePath, targetFileName),
       coords,
       nw,
@@ -61,24 +65,18 @@ const convert = (exports.convert = (
   );
 });
 
-function generateConversionCommand(
-  sourceFileName,
-  targetFileName,
-  c,
-  natWidth,
-  natHeight
-) {
+function generateConversionCommand(targetFileName, c, natWidth, natHeight) {
   const longerSide = Math.max(natWidth, natHeight);
   const height = (longerSide / 100) * 69;
 
-  console.log({ sourceFileName, targetFileName }, c, {
+  console.log({ activePreviewFile, targetFileName }, c, {
     natWidth,
     natHeight,
     longerSide,
     height
   });
 
-  return `convert '${sourceFileName}' \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
+  return `convert '${activePreviewFile}' \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
     c.TLX
   },${c.TLY} 0,0 ${c.BLX},${c.BLY} 0,${height}  ${c.BRX},${
     c.BRY
@@ -90,7 +88,7 @@ function generateConversionCommand(
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 700,
-    height: 900,
+    height: 950,
     fullscreenable: false,
     titleBarStyle: "hiddenInset"
   });

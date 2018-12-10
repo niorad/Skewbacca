@@ -13,18 +13,19 @@ document.getElementById("open").addEventListener("click", () => {
   mainProcess.getFileFromUser();
 });
 
-document.getElementById("save").addEventListener("click", saveCurrentSelection);
+document
+  .getElementById("save")
+  .addEventListener("click", previewCurrentSelection);
 
-function saveCurrentSelection() {
+function previewCurrentSelection() {
   document.getElementById("preview-image").src = "";
   const nw = document.getElementById("main-image").naturalWidth;
   const nh = document.getElementById("main-image").naturalHeight;
   mainProcess.convert(
-    openFile,
     `skewbacca_${rndstr.generate(8)}.jpg`,
-    getSkewCoordinates(),
-    nw,
-    nh
+    getSkewCoordinates(0.2),
+    nw * 0.2,
+    nh * 0.2
   );
 }
 
@@ -55,7 +56,7 @@ handles.forEach(handle => {
     e.target.style.left = e.pageX - handleWrapper.offsetLeft + "px";
     e.target.style.top = e.pageY - handleWrapper.offsetTop + "px";
     e.target.classList.remove("dragged");
-    saveCurrentSelection();
+    previewCurrentSelection();
   });
   handle.addEventListener("drag", e => {
     if (!e.pageX && !e.pageY) return;
@@ -71,26 +72,26 @@ handles.forEach(handle => {
   });
 });
 
-function getSkewCoordinates() {
-  const TLX = percX(document.getElementById("topleft").offsetLeft);
-  const TLY = percY(document.getElementById("topleft").offsetTop);
-  const TRX = percX(document.getElementById("topright").offsetLeft);
-  const TRY = percY(document.getElementById("topright").offsetTop);
-  const BRX = percX(document.getElementById("bottomright").offsetLeft);
-  const BRY = percY(document.getElementById("bottomright").offsetTop);
-  const BLX = percX(document.getElementById("bottomleft").offsetLeft);
-  const BLY = percY(document.getElementById("bottomleft").offsetTop);
+function getSkewCoordinates(scale) {
+  const TLX = percX(document.getElementById("topleft").offsetLeft, scale);
+  const TLY = percY(document.getElementById("topleft").offsetTop, scale);
+  const TRX = percX(document.getElementById("topright").offsetLeft, scale);
+  const TRY = percY(document.getElementById("topright").offsetTop, scale);
+  const BRX = percX(document.getElementById("bottomright").offsetLeft, scale);
+  const BRY = percY(document.getElementById("bottomright").offsetTop, scale);
+  const BLX = percX(document.getElementById("bottomleft").offsetLeft, scale);
+  const BLY = percY(document.getElementById("bottomleft").offsetTop, scale);
   return { TLX, TLY, TRX, TRY, BRX, BRY, BLX, BLY };
 }
 
-function percX(n) {
+function percX(n, scale) {
   const nat = document.getElementById("main-image").naturalWidth;
-  return (n / handleWrapper.getBoundingClientRect().width) * nat;
+  return (n / handleWrapper.getBoundingClientRect().width) * (nat * scale);
 }
 
-function percY(n) {
+function percY(n, scale) {
   const nat = document.getElementById("main-image").naturalHeight;
-  return (n / handleWrapper.getBoundingClientRect().height) * nat;
+  return (n / handleWrapper.getBoundingClientRect().height) * (nat * scale);
 }
 
 function drawLines() {
