@@ -34,9 +34,11 @@ const saveFileTo = () => {
   return file;
 };
 
-const openFile = file => {
+const openFile = (exports.openFile = file => {
+  console.log("OPEN FILE REMOTE: ", file);
   const originalFileName = path.basename(file);
   const previewFileName = "tmp_sbprev_" + originalFileName;
+  activeSourceFile = file;
   activePreviewFile = path.join(filePath, previewFileName);
   exec(
     `convert '${file}' -resize ${previewSizePercent}% '${activePreviewFile}'`,
@@ -44,15 +46,15 @@ const openFile = file => {
       mainWindow.webContents.send("file-opened", file, null);
     }
   );
-};
+});
 
 const convertFull = (exports.convertFull = (coords, nw, nh) => {
   const file = saveFileTo();
+  console.log("CONVERT FULL", file);
   exec(
     generateConversionCommand(file, coords, nw, nh, false),
     (err, stdout, stderr) => {
-      console.log(stdout);
-      console.log(stderr);
+      console.log(err);
     }
   );
 });

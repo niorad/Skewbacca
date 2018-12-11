@@ -5,12 +5,47 @@ const mainProcess = remote.require("./main.js");
 const handles = document.querySelectorAll(".handle");
 const handleWrapper = document.getElementById("handle-wrapper");
 const mainImageContainer = document.getElementById("main-image");
+const stage = document.getElementById("stage");
 const canvas = document.getElementById("lines");
 const ctx = canvas.getContext("2d");
-let openFile = "";
 
 document.getElementById("open").addEventListener("click", () => {
   mainProcess.getFileFromUser();
+});
+
+stage.addEventListener("dragover", e => {
+  if (e.target !== stage) return;
+  e.preventDefault();
+  const file = e.dataTransfer.items[0];
+  if (["image/jpeg"].includes(file.type)) {
+    stage.classList.add("drag");
+  } else {
+    stage.classList.add("error");
+  }
+});
+
+stage.addEventListener("dragleave", e => {
+  stage.classList.remove("drag");
+  stage.classList.remove("error");
+});
+
+stage.addEventListener("dragend", e => {
+  stage.classList.remove("drag");
+  stage.classList.remove("error");
+});
+
+stage.addEventListener("drop", e => {
+  const file = e.dataTransfer.files[0];
+
+  if (["image/jpeg"].includes(file.type)) {
+    mainProcess.openFile(file.path);
+    openFile(file.path);
+  } else {
+    alert("No bueno!");
+  }
+  stage.classList.remove("drag");
+  stage.classList.remove("error");
+  e.preventDefault();
 });
 
 document
@@ -35,9 +70,7 @@ function previewCurrentSelection() {
   );
 }
 
-ipcRenderer.on("file-opened", (event, file, content) => {
-  console.log(file);
-  openFile = file;
+function openFile(file) {
   mainImageContainer.src = file;
   mainImageContainer.addEventListener("dragstart", e => {
     e.preventDefault();
@@ -49,6 +82,10 @@ ipcRenderer.on("file-opened", (event, file, content) => {
     canvas.setAttribute("height", handleWrapper.offsetHeight);
     drawLines();
   }, 10);
+}
+
+ipcRenderer.on("file-opened", (event, file, content) => {
+  openFile(file);
 });
 
 ipcRenderer.on("file-saved", (event, targetFileName) => {
