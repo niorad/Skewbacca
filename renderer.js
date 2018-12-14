@@ -84,6 +84,10 @@ function openFile(file) {
   }, 10);
 }
 
+ipcRenderer.on("log", (_, log, __) => {
+  console.log(log);
+});
+
 ipcRenderer.on("file-opened", (event, file, content) => {
   openFile(file);
 });

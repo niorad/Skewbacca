@@ -4,7 +4,8 @@
   "description": "Skewing-Tool for DevLids",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . --out=build --overwrite"
   },
   "repository": "https://github.com/niorad/skewbbacca",
   "author": "Antonio Radovcic",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "del": "^3.0.0",
+    "electron-packager": "^13.0.0",
     "randomstring": "^1.1.5"
   }
 }

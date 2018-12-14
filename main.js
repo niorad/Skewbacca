@@ -12,6 +12,8 @@ const previewSizePercent = 20;
 fs.mkdir(filePath, () => {});
 let mainWindow;
 
+process.env.PATH += ":/usr/local/bin";
+
 const getFileFromUser = (exports.getFileFromUser = () => {
   const files = dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"]
@@ -54,6 +56,7 @@ const convertFull = (exports.convertFull = (coords, nw, nh) => {
   exec(
     generateConversionCommand(file, coords, nw, nh, false),
     (err, stdout, stderr) => {
+      mainWindow.webContents.send("log", { err, stdout, stderr });
       console.log(err);
     }
   );
@@ -76,6 +79,7 @@ const convertPreview = (exports.convertPreview = (
     (err, stdout, stderr) => {
       console.log(stdout);
       console.log(stderr);
+      mainWindow.webContents.send("log", { err, stdout, stderr });
       mainWindow.webContents.send(
         "file-saved",
         path.join(filePath, targetFileName)
