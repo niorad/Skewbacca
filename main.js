@@ -1,8 +1,10 @@
-const { app, remote, BrowserWindow, dialog } = require("electron");
+const { app, remote, BrowserWindow, dialog, Menu } = require("electron");
 const { exec } = require("child_process");
 const del = require("del");
 const path = require("path");
 const fs = require("fs");
+const { conversionCommand } = require("./conversioncommand");
+const { menuTemplate } = require("./menutemplate");
 
 const userDataPath = (app || remote.app).getPath("userData");
 const filePath = path.join(userDataPath, "generated");
@@ -54,7 +56,7 @@ const convertFull = (exports.convertFull = (coords, nw, nh) => {
   const file = saveFileTo();
   console.log("CONVERT FULL", file);
   exec(
-    generateConversionCommand(file, coords, nw, nh, false),
+    conversionCommand(file, coords, nw, nh, activeSourceFile),
     (err, stdout, stderr) => {
       mainWindow.webContents.send("log", { err, stdout, stderr });
       console.log(err);
@@ -69,12 +71,12 @@ const convertPreview = (exports.convertPreview = (
   nh
 ) => {
   exec(
-    generateConversionCommand(
+    conversionCommand(
       path.join(filePath, targetFileName),
       coords,
       nw,
       nh,
-      true
+      activePreviewFile
     ),
     (err, stdout, stderr) => {
       console.log(stdout);
@@ -88,27 +90,6 @@ const convertPreview = (exports.convertPreview = (
   );
 });
 
-function generateConversionCommand(
-  targetFileName,
-  c,
-  natWidth,
-  natHeight,
-  isPreview
-) {
-  const longerSide = Math.max(natWidth, natHeight);
-  const height = (longerSide / 100) * 69;
-
-  return `convert '${
-    isPreview ? activePreviewFile : activeSourceFile
-  }' \\( +clone -rotate 90 +clone -mosaic +level-colors white \\) +swap -gravity Northwest -composite -distort Perspective '${
-    c.TLX
-  },${c.TLY} 0,0 ${c.BLX},${c.BLY} 0,${height}  ${c.BRX},${
-    c.BRY
-  } ${longerSide},${height}  ${c.TRX},${
-    c.TRY
-  } ${longerSide},0' -gravity Northwest -crop ${longerSide}x${height}+0+0 +repage '${targetFileName}'`;
-}
-
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 700,
@@ -116,10 +97,10 @@ function createWindow() {
     fullscreenable: false,
     titleBarStyle: "hiddenInset"
   });
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
   mainWindow.loadFile("index.html");
   mainWindow.setResizable(false);
-
-  // mainWindow.webContents.openDevTools();
+  mainWindow.setVibrancy("ultra-dark");
   mainWindow.on("closed", function() {
     mainWindow = null;
   });
