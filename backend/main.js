@@ -32,7 +32,7 @@ const getFileFromUser = (exports.getFileFromUser = () => {
 const saveFileTo = () => {
   const file = dialog.showSaveDialog(mainWindow, {
     title: "Save Lid",
-    filters: [{ name: "JPEG", extensions: ["JPG"] }]
+    filters: [{ name: "JPEG", extensions: ["jpg"] }]
   });
   if (!file) return;
   return file;
@@ -100,7 +100,6 @@ function createWindow() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
   mainWindow.loadFile("frontend/index.html");
   mainWindow.setResizable(false);
-  mainWindow.setVibrancy("ultra-dark");
   mainWindow.on("closed", function() {
     mainWindow = null;
   });

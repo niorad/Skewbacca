@@ -4,6 +4,7 @@ html {
   padding: 0;
   width: 100%;
   font: menu;
+  background: #222;
   -webkit-app-region: drag;
 }
 
@@ -97,6 +98,10 @@ html {
   object-fit: contain;
 }
 
+#preview-image.pending {
+  display: none;
+}
+
 .handle-wrapper {
   position: relative;
   overflow: hidden;
@@ -185,4 +190,53 @@ html {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.spinner:not(.active) {
+  display: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  background: #222;
+  border-radius: 50px;
+  border: 5px solid white;
+  position: relative;
+  animation-name: hand;
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.spinner::before,
+.spinner::after {
+  content: " ";
+  width: 10px;
+  height: 25px;
+  background: #222;
+  display: block;
+  transform-origin: bottom;
+  position: absolute;
+  left: calc(50% - 5px);
+  top: -5px;
+  animation-name: hand;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.spinner::before {
+  animation-duration: 1.5s;
+}
+.spinner::after {
+  animation-duration: 2s;
+}
+
+@keyframes hand {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

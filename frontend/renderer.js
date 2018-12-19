@@ -60,6 +60,8 @@ function convertCurrentSelection() {
 
 function previewCurrentSelection() {
   document.getElementById("preview-image").src = "";
+  document.getElementById("preview-image").classList.add("pending");
+  document.getElementById("preview-spinner").classList.add("active");
   const nw = document.getElementById("main-image").naturalWidth;
   const nh = document.getElementById("main-image").naturalHeight;
   mainProcess.convertPreview(
@@ -95,6 +97,8 @@ ipcRenderer.on("file-opened", (event, file, content) => {
 ipcRenderer.on("file-saved", (event, targetFileName) => {
   console.log(targetFileName);
   document.getElementById("preview-image").src = targetFileName;
+  document.getElementById("preview-image").classList.remove("pending");
+  document.getElementById("preview-spinner").classList.remove("active");
 });
 
 handles.forEach(handle => {
