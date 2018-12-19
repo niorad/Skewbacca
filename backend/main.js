@@ -93,17 +93,18 @@ const convertPreview = (exports.convertPreview = (
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 700,
-    height: 950,
+    height: 890,
     fullscreenable: false,
     titleBarStyle: "hiddenInset"
   });
   Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile("frontend/index.html");
   mainWindow.setResizable(false);
   mainWindow.setVibrancy("ultra-dark");
   mainWindow.on("closed", function() {
     mainWindow = null;
   });
+  mainWindow.webContents.openDevTools();
 }
 
 app.on("ready", createWindow);

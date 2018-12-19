@@ -35,24 +35,33 @@ html {
   font: menu;
   font-size: 14px;
   color: white;
-  border: 1px solid white;
-  background: #222;
+  border: 0;
+  background: transparent;
   outline: 0;
   border-radius: 50px;
   padding: 1rem 2rem;
   text-transform: uppercase;
   font-weight: 100;
+  transition: 0.1s all;
+  box-shadow: 0 0 0 transparent;
 }
 
 .buttons button:hover {
   color: #222;
   background: white;
+  transition: 0.1s all;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.buttons button:active {
+  transition: 0.1s all;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
+  transform: translateY(5px);
 }
 
 .buttons {
   display: flex;
   padding: 25px;
-  margin-top: 50px;
   justify-content: space-between;
   align-items: flex-end;
   height: 150px;

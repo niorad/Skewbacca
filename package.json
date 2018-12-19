@@ -2,7 +2,7 @@
   "name": "Skewbacca",
   "version": "0.1.0",
   "description": "Skewing-Tool for DevLids",
-  "main": "main.js",
+  "main": "backend/main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . --out=build --overwrite"
