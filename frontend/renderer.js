@@ -9,10 +9,6 @@ const stage = document.getElementById("stage");
 const canvas = document.getElementById("lines");
 const ctx = canvas.getContext("2d");
 
-document.getElementById("open").addEventListener("click", () => {
-  mainProcess.getFileFromUser();
-});
-
 stage.addEventListener("dragover", e => {
   if (e.target !== stage) return;
   e.preventDefault();
@@ -47,10 +43,6 @@ stage.addEventListener("drop", e => {
   stage.classList.remove("error");
   e.preventDefault();
 });
-
-document
-  .getElementById("save")
-  .addEventListener("click", convertCurrentSelection);
 
 function convertCurrentSelection() {
   const nw = document.getElementById("main-image").naturalWidth;
@@ -93,6 +85,8 @@ ipcRenderer.on("log", (_, log, __) => {
 ipcRenderer.on("file-opened", (event, file, content) => {
   openFile(file);
 });
+
+ipcRenderer.on("save-intent", convertCurrentSelection);
 
 ipcRenderer.on("file-saved", (event, targetFileName) => {
   console.log(targetFileName);

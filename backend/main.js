@@ -4,16 +4,20 @@ const del = require("del");
 const path = require("path");
 const fs = require("fs");
 const { conversionCommand } = require("./conversioncommand");
-const { menuTemplate } = require("./menutemplate");
+const { getMenuTemplate } = require("./menutemplate");
 
-const userDataPath = (app || remote.app).getPath("userData");
-const filePath = path.join(userDataPath, "generated");
-let activeSourceFile;
-let activePreviewFile;
-const previewSizePercent = 20;
-fs.mkdir(filePath, () => {});
 let mainWindow;
 
+const state = {
+  activeSourceFile: "",
+  activePreviewFile: "",
+  config: {
+    previewSizePercent: 20,
+    filePath: path.join((app || remote.app).getPath("userData"), "generated")
+  }
+};
+
+fs.mkdir(state.config.filePath, () => {});
 process.env.PATH += ":/usr/local/bin";
 
 const getFileFromUser = (exports.getFileFromUser = () => {
@@ -24,7 +28,7 @@ const getFileFromUser = (exports.getFileFromUser = () => {
     return;
   }
   const file = files[0];
-  activeSourceFile = file;
+  state.activeSourceFile = file;
   openFile(file);
   console.log(file);
 });
@@ -39,14 +43,14 @@ const saveFileTo = () => {
 };
 
 const openFile = (exports.openFile = file => {
-  console.log("OPEN FILE REMOTE: ", file);
-  const originalFileName = path.basename(file);
-  const previewFileName = "tmp_sbprev_" + originalFileName;
-  activeSourceFile = file;
-  activePreviewFile = path.join(filePath, previewFileName);
+  const previewFileName = "tmp_sbprev_" + path.basename(file);
+  state.activeSourceFile = file;
+  state.activePreviewFile = path.join(state.config.filePath, previewFileName);
   exec(
-    `convert '${file}' -resize ${previewSizePercent}% '${activePreviewFile}'`,
-    (err, stdout, stderr) => {
+    `convert '${file}' -resize ${state.config.previewSizePercent}% '${
+      state.activePreviewFile
+    }'`,
+    (_err, _stdout, _stderr) => {
       mainWindow.webContents.send("file-opened", file, null);
     }
   );
@@ -56,9 +60,8 @@ const convertFull = (exports.convertFull = (coords, nw, nh) => {
   const file = saveFileTo();
   console.log("CONVERT FULL", file);
   exec(
-    conversionCommand(file, coords, nw, nh, activeSourceFile),
+    conversionCommand(file, coords, nw, nh, state.activeSourceFile),
     (err, stdout, stderr) => {
-      mainWindow.webContents.send("log", { err, stdout, stderr });
       console.log(err);
     }
   );
@@ -72,19 +75,18 @@ const convertPreview = (exports.convertPreview = (
 ) => {
   exec(
     conversionCommand(
-      path.join(filePath, targetFileName),
+      path.join(state.config.filePath, targetFileName),
       coords,
       nw,
       nh,
-      activePreviewFile
+      state.activePreviewFile
     ),
     (err, stdout, stderr) => {
       console.log(stdout);
       console.log(stderr);
-      mainWindow.webContents.send("log", { err, stdout, stderr });
       mainWindow.webContents.send(
         "file-saved",
-        path.join(filePath, targetFileName)
+        path.join(state.config.filePath, targetFileName)
       );
     }
   );
@@ -97,7 +99,7 @@ function createWindow() {
     fullscreenable: false,
     titleBarStyle: "hiddenInset"
   });
-  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+  Menu.setApplicationMenu(Menu.buildFromTemplate(getMenuTemplate(mainWindow)));
   mainWindow.loadFile("frontend/index.html");
   mainWindow.setResizable(false);
   mainWindow.on("closed", function() {
@@ -115,7 +117,7 @@ app.on("window-all-closed", function() {
 });
 
 app.on("quit", function() {
-  del([filePath], { force: true });
+  del([state.config.filePath], { force: true });
 });
 
 app.on("activate", function() {

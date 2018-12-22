@@ -11,7 +11,7 @@
   "author": "Antonio Radovcic",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^4.0.0-beta.8"
+    "electron": "4.0.0"
   },
   "dependencies": {
     "del": "^3.0.0",

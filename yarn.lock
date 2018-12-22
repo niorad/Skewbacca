@@ -389,10 +389,10 @@ electron-packager@^13.0.0:
     semver "^5.3.0"
     yargs-parser "^11.0.0"
 
-electron@^4.0.0-beta.8:
-  version "4.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.0.0-beta.8.tgz#df2f464d4e13479a3baa1e063af6c7362b9a2756"
-  integrity sha512-zo0Tf3t1uary5O9Skdlo37axs+vvh9CPC+MkvZnnX3MA/3kWIc+I6jN+AL4bHUdxsMVtjbY8KnusjnCjKSb0sg==
+electron@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-4.0.0.tgz#6ccb40cc8bf2d49954dcea73b97ae7ad12ee04b3"
+  integrity sha512-3XPG/3IXlvnT1oe1K6zEushoD0SKbP8xwdrL10EWGe6k2iOV4hSHqJ8vWnR8yZ7VbSXmBRfomEFDNAo/q/cwKw==
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^4.1.0"
