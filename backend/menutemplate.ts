@@ -1,13 +1,15 @@
-const { app } = require("electron");
-const mainProcess = require("./main.js");
+import { BrowserWindow, app } from "electron";
 
-module.exports.getMenuTemplate = mainWindow => [
+const mainProcess = require("./main.ts");
+
+const getMenuTemplate = (
+  mainWindow: BrowserWindow
+): Electron.MenuItemConstructorOptions[] => [
   {
     label: "Skewbacca",
     submenu: [
       {
-        label: "About Application",
-        selector: "orderFrontStandardAboutPanel:"
+        label: "About Application"
       },
       { type: "separator" },
       {
@@ -25,7 +27,6 @@ module.exports.getMenuTemplate = mainWindow => [
       {
         label: "Open…",
         accelerator: "CmdOrCtrl+O",
-        selector: "open:",
         click: function() {
           mainProcess.getFileFromUser();
         }
@@ -33,7 +34,6 @@ module.exports.getMenuTemplate = mainWindow => [
       {
         label: "Save As…",
         accelerator: "CmdOrCtrl+S",
-        selector: "save as:",
         click: function() {
           mainWindow.webContents.send("save-intent", null);
         }
@@ -46,39 +46,35 @@ module.exports.getMenuTemplate = mainWindow => [
       {
         label: "Undo",
         accelerator: "CmdOrCtrl+Z",
-        selector: "undo:",
         role: "undo"
       },
       {
         label: "Redo",
         accelerator: "Shift+CmdOrCtrl+Z",
-        selector: "redo:",
         role: "redo"
       },
       { type: "separator" },
       {
         label: "Cut",
         accelerator: "CmdOrCtrl+X",
-        selector: "cut:",
         role: "cut"
       },
       {
         label: "Copy",
         accelerator: "CmdOrCtrl+C",
-        selector: "copy:",
         role: "copy"
       },
       {
         label: "Paste",
         accelerator: "CmdOrCtrl+V",
-        selector: "paste:",
         role: "paste"
       },
       {
         label: "Select All",
-        accelerator: "CmdOrCtrl+A",
-        selector: "selectAll:"
+        accelerator: "CmdOrCtrl+A"
       }
     ]
   }
 ];
+
+export default getMenuTemplate;

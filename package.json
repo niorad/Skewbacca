@@ -2,7 +2,7 @@
   "name": "Skewbacca",
   "version": "0.1.0",
   "description": "Skewing-Tool for DevLids",
-  "main": "backend/main.js",
+  "main": "backend/dist/bundle.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . --out=build --overwrite"
@@ -11,11 +11,17 @@
   "author": "Antonio Radovcic",
   "license": "MIT",
   "devDependencies": {
-    "electron": "4.0.0"
+    "electron": "4.0.0",
+    "webpack-cli": "^3.1.2"
   },
   "dependencies": {
+    "@types/del": "^3.0.1",
+    "@types/node": "^10.12.18",
     "del": "^3.0.0",
     "electron-packager": "^13.0.0",
-    "randomstring": "^1.1.5"
+    "randomstring": "^1.1.5",
+    "ts-loader": "^5.3.2",
+    "typescript": "^3.2.2",
+    "webpack": "^4.28.1"
   }
 }

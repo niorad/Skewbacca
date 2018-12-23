@@ -1,6 +1,6 @@
 const { remote, ipcRenderer } = require("electron");
 const rndstr = require("randomstring");
-const mainProcess = remote.require("./main.js");
+const mainProcess = remote.require("./bundle.js");
 
 const handles = document.querySelectorAll(".handle");
 const handleWrapper = document.getElementById("handle-wrapper");
