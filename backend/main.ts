@@ -3,7 +3,7 @@ import { exec } from "child_process";
 import * as path from "path";
 import { Coordinates, Config, State } from "./types";
 import { initialize } from "./setup";
-import ImageConverter from "./ImageConverter";
+import { ImageConverter } from "./ImageConverter";
 
 const state: State = {
   activeSourceFile: "",
