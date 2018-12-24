@@ -25,4 +25,16 @@ describe("Application launch", function() {
       assert.equal(count, 2);
     });
   });
+
+  it("window has correct width", function() {
+    return this.app.browserWindow.getSize().then(function(sizeArray) {
+      assert.equal(sizeArray[0], 700);
+    });
+  });
+
+  it("window has correct height", function() {
+    return this.app.browserWindow.getSize().then(function(sizeArray) {
+      assert.equal(sizeArray[1], 890);
+    });
+  });
 });
