@@ -10,6 +10,8 @@ Only tested on OSX so far.
 
 - Placing four points on each corner of a lid via drag & drop (the red handle has to be placed on the upper left corner of the lid)
 - Generation and display of un-skewed image via ImageMagick
+- Saving the result to a new image
+- Opening images via Drag & Drop into the window
 
 ## Getting started
 

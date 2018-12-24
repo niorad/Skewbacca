@@ -1,7 +1,8 @@
 import { app, BrowserWindow, Menu } from "electron";
 import * as del from "del";
+import * as fs from "fs";
 import getMenuTemplate from "./menutemplate";
-import { Coordinates, Config, State } from "./types";
+import { Config } from "./types";
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -21,18 +22,17 @@ function setMenuForWindow(window: BrowserWindow): void {
 }
 
 export function initialize(config: Config): void {
+  fs.mkdir(config.filePath, () => {});
+  process.env.PATH += ":/usr/local/bin";
   app.on("ready", () => {
     const win = createWindow();
     setMenuForWindow(win);
   });
 
-  app.on("window-all-closed", function() {
-    if (process.platform !== "darwin") {
-      app.quit();
+  app.on(
+    "quit",
+    (): void => {
+      del([config.filePath], { force: true });
     }
-  });
-
-  app.on("quit", function() {
-    del([config.filePath], { force: true });
-  });
+  );
 }
