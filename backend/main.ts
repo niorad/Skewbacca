@@ -50,20 +50,15 @@ const openFile = (exports.openFile = (file: string): void => {
   const previewFileName = "tmp_sbprev_" + path.basename(file);
   state.activeSourceFile = file;
   state.activePreviewFile = path.join(config.filePath, previewFileName);
-  exec(
-    imageConverter.generateResizeCommand(
-      file,
-      config.previewSizePercent,
-      state.activePreviewFile
-    ),
-    (_err, _stdout, _stderr) => {
+  imageConverter
+    .resizeImage(file, config.previewSizePercent, state.activePreviewFile)
+    .then(() => {
       BrowserWindow.getFocusedWindow()!.webContents.send(
         "file-opened",
         file,
         null
       );
-    }
-  );
+    });
 });
 
 const convertFull = (exports.convertFull = (
@@ -73,18 +68,11 @@ const convertFull = (exports.convertFull = (
 ): void => {
   const file = saveFileTo();
   console.log("CONVERT FULL", file);
-  exec(
-    imageConverter.generateUnskewCommand(
-      file,
-      coords,
-      nw,
-      nh,
-      state.activeSourceFile
-    ),
-    (err, _, __) => {
-      console.log(err);
-    }
-  );
+  imageConverter
+    .unskewImage(file, coords, nw, nh, state.activeSourceFile)
+    .then(() => {
+      console.log("Conversion Done!");
+    });
 });
 
 const convertPreview = (exports.convertPreview = (
@@ -92,22 +80,14 @@ const convertPreview = (exports.convertPreview = (
   coords: Coordinates,
   nw: number,
   nh: number
-) => {
-  exec(
-    imageConverter.generateUnskewCommand(
-      path.join(config.filePath, targetFileName),
-      coords,
-      nw,
-      nh,
-      state.activePreviewFile
-    ),
-    (_, stdout, stderr) => {
-      console.log(stdout);
-      console.log(stderr);
+): void => {
+  const fullSourceFilePath = path.join(config.filePath, targetFileName);
+  imageConverter
+    .unskewImage(fullSourceFilePath, coords, nw, nh, state.activePreviewFile)
+    .then(() => {
       BrowserWindow.getFocusedWindow()!.webContents.send(
         "file-saved",
-        path.join(config.filePath, targetFileName)
+        fullSourceFilePath
       );
-    }
-  );
+    });
 });
