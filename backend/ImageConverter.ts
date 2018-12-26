@@ -2,7 +2,7 @@ import { Coordinates } from "./types";
 import { exec } from "child_process";
 
 export class ImageConverter {
-  private generateResizeCommand(
+  generateResizeCommand(
     file: string,
     sizeInPercent: number,
     target: string
@@ -10,12 +10,12 @@ export class ImageConverter {
     return `convert '${file}' -resize ${sizeInPercent}% '${target}'`;
   }
 
-  private generateUnskewCommand(
-    target: string,
+  generateUnskewCommand(
+    source: string,
     c: Coordinates,
     width: number,
     height: number,
-    source: string
+    target: string
   ): string {
     const { TLX, TLY, BLX, BLY, BRY, BRX, TRX, TRY } = c;
     const longerSide = Math.max(width, height);
@@ -54,8 +54,10 @@ export class ImageConverter {
         this.generateUnskewCommand(source, coords, width, height, target),
         (err, stdout, stderr) => {
           if (err) {
+            console.log("Conversion error:", stdout);
             rej(stderr);
           } else {
+            console.log("Conversion successful:", stdout);
             res(stdout);
           }
         }
