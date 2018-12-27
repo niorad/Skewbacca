@@ -1,7 +1,16 @@
 import { Coordinates } from "./types";
 import { exec } from "child_process";
 
+/**
+ * ImageConverter is the interface to ImageMagick, and takes care of processing Images
+ */
 export class ImageConverter {
+  /**
+   * Generates an ImageMagick-Command for resizing images for previews
+   * @param file The full path & name of the source-file
+   * @param sizeInPercent The size of the newly created File (usually smaller)
+   * @param target The full path & name of the target-file
+   */
   generateResizeCommand(
     file: string,
     sizeInPercent: number,
@@ -10,6 +19,14 @@ export class ImageConverter {
     return `convert '${file}' -resize ${sizeInPercent}% '${target}'`;
   }
 
+  /**
+   * Generates an ImageMagick-Command for unskewing an image
+   * @param source The full path & name of the source-file
+   * @param c An object with the coordinates of each handle
+   * @param width The width of the source-image
+   * @param height The height of the source-image
+   * @param target The full path & name of the target-file
+   */
   generateUnskewCommand(
     source: string,
     c: Coordinates,
@@ -54,10 +71,8 @@ export class ImageConverter {
         this.generateUnskewCommand(source, coords, width, height, target),
         (err, stdout, stderr) => {
           if (err) {
-            console.log("Conversion error:", stdout);
             rej(stderr);
           } else {
-            console.log("Conversion successful:", stdout);
             res(stdout);
           }
         }
