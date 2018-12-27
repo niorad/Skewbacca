@@ -15,5 +15,15 @@ Only tested on OSX so far.
 
 ## Getting started
 
-- brew install imagemagick
-- yarn && yarn start
+- brew install imagemagick (needs to be executable from anywhere)
+- yarn install
+- Test: yarn test
+- Build TypeScript and start app: yarn start
+
+## Using
+
+- Electron
+- ImageMagick for the image-conversion
+- TypeScript for the backend-ish part of Electron
+- Plain JS for the renderer
+- Spectron and Mocha for testing
