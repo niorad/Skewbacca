@@ -24,6 +24,5 @@ Only tested on OSX so far.
 
 - Electron
 - ImageMagick for the image-conversion
-- TypeScript for the backend-ish part of Electron
-- Plain JS for the renderer
+- TypeScript for all things JS
 - Spectron and Mocha for testing
