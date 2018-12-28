@@ -1,8 +1,9 @@
 import { app, remote, BrowserWindow, dialog, ipcMain } from "electron";
 import * as path from "path";
-import { Coordinates, Config, State } from "./types";
+import { Coordinates, Config, State } from "../types/types";
 import { initialize } from "./setup";
 import { ImageConverter } from "./ImageConverter";
+import { FileManager } from "./FileManager";
 
 const state: State = {
   activeSourceFile: "",
@@ -11,42 +12,25 @@ const state: State = {
 
 const config: Config = {
   previewSizePercent: 20,
-  filePath: path.join((app || remote.app).getPath("userData"), "generated")
+  filePath: path.join((app || remote.app).getPath("userData"), "generated"),
+  previewFilePrefix: "tmp_sbprev_"
 };
 
 const imageConverter = new ImageConverter();
+const fileManager = new FileManager();
 
 initialize(config);
 
-export const getFileFromUser = (): void => {
-  const files: string[] = dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow()!,
-    {
-      properties: ["openFile"]
-    }
-  );
-  if (!files) {
-    return;
-  }
-  const file: string = files[0];
-  state.activeSourceFile = file;
-  openFile(file);
-};
-
-const saveFileTo = (): string => {
-  const file: string = dialog.showSaveDialog(
-    BrowserWindow.getFocusedWindow()!,
-    {
-      title: "Save Lid",
-      filters: [{ name: "JPEG", extensions: ["jpg"] }]
-    }
-  );
-  if (!file) return "";
-  return file;
+export const onOpenFileRequested = (): void => {
+  const currentBrowserWindow = BrowserWindow.getFocusedWindow()!;
+  fileManager.getFileFromUser(currentBrowserWindow).then(file => {
+    state.activeSourceFile = file;
+    openFile(file);
+  });
 };
 
 const openFile = (file: string): void => {
-  const previewFileName = "tmp_sbprev_" + path.basename(file);
+  const previewFileName = config.previewFilePrefix + path.basename(file);
   state.activeSourceFile = file;
   state.activePreviewFile = path.join(config.filePath, previewFileName);
   imageConverter
@@ -68,7 +52,9 @@ ipcMain.on("open-file", (_data, path: string) => {
 });
 
 const convertFull = (coords: Coordinates, nw: number, nh: number): void => {
-  const file = saveFileTo();
+  const file = fileManager.getSavingDestinationFromUser(
+    BrowserWindow.getFocusedWindow()!
+  );
   console.log("CONVERT FULL", file);
   imageConverter
     .unskewImage(state.activeSourceFile, coords, nw, nh, file)

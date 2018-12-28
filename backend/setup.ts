@@ -2,7 +2,7 @@ import { app, BrowserWindow, Menu } from "electron";
 import * as del from "del";
 import * as fs from "fs";
 import getMenuTemplate from "./menutemplate";
-import { Config } from "./types";
+import { Config } from "../types/types";
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({

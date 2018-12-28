@@ -12,6 +12,7 @@ export interface Coordinates {
 export interface Config {
   previewSizePercent: number;
   filePath: string;
+  previewFilePrefix: string;
 }
 
 export interface State {

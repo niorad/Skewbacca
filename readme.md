@@ -13,6 +13,10 @@ Only tested on OSX so far.
 - Saving the result to a new image
 - Opening images via Drag & Drop into the window
 
+## Ideas/Plans
+
+- Remove ImageMagick-Dependency, maybe there's something similar for Node.js?
+
 ## Getting started
 
 - brew install imagemagick (needs to be executable from anywhere)

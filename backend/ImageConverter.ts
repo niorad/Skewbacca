@@ -1,4 +1,4 @@
-import { Coordinates } from "./types";
+import { Coordinates } from "../types/types";
 import { exec } from "child_process";
 
 /**

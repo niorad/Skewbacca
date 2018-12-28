@@ -1,5 +1,5 @@
 import { BrowserWindow, app } from "electron";
-import { getFileFromUser } from "./main";
+import { onOpenFileRequested } from "./main";
 
 const getMenuTemplate = (
   mainWindow: BrowserWindow
@@ -27,7 +27,7 @@ const getMenuTemplate = (
         label: "Open…",
         accelerator: "CmdOrCtrl+O",
         click: function() {
-          getFileFromUser();
+          onOpenFileRequested();
         }
       },
       {

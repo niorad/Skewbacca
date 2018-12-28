@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import { Coordinates } from "../types/types";
 import rndstr from "randomstring";
 
 const handles = document.querySelectorAll(".handle");
@@ -53,6 +54,7 @@ function convertCurrentSelection() {
 
 function previewCurrentSelection() {
   (<HTMLImageElement>document.getElementById("preview-image")).src = "";
+  document.getElementById("preview-image").classList.remove("hidden");
   document.getElementById("preview-image").classList.add("pending");
   document.getElementById("preview-spinner").classList.add("active");
   const nw = (<HTMLImageElement>document.getElementById("main-image"))
@@ -82,17 +84,13 @@ function openFile(file: string) {
   }, 10);
 }
 
-ipcRenderer.on("log", (_, log, __) => {
-  console.log(log);
-});
-
-ipcRenderer.on("file-opened", (_event, file, _content) => {
+ipcRenderer.on("file-opened", (_event, file: string, _content) => {
   openFile(file);
 });
 
 ipcRenderer.on("save-intent", convertCurrentSelection);
 
-ipcRenderer.on("file-saved", (event, targetFileName) => {
+ipcRenderer.on("file-saved", (_event, targetFileName) => {
   console.log(targetFileName);
   (<HTMLImageElement>(
     document.getElementById("preview-image")
@@ -102,6 +100,7 @@ ipcRenderer.on("file-saved", (event, targetFileName) => {
 });
 
 handles.forEach(handle => {
+  //--
   handle.addEventListener("dragend", (e: DragEvent) => {
     if (!e.pageX && !e.pageY) return;
     (<HTMLButtonElement>e.target).style.left =
@@ -111,6 +110,7 @@ handles.forEach(handle => {
     (<HTMLButtonElement>e.target).classList.remove("dragged");
     previewCurrentSelection();
   });
+  //--
   handle.addEventListener("drag", (e: DragEvent) => {
     if (!e.pageX && !e.pageY) return;
     (<HTMLButtonElement>e.target).style.left =
@@ -119,6 +119,7 @@ handles.forEach(handle => {
       e.pageY - handleWrapper.offsetTop + "px";
     drawLines();
   });
+  //--
   handle.addEventListener("dragstart", (e: DragEvent) => {
     const img = document.createElement("span");
     img.style.display = "none";
@@ -127,7 +128,7 @@ handles.forEach(handle => {
   });
 });
 
-function getSkewCoordinates(scale: number) {
+function getSkewCoordinates(scale: number): Coordinates {
   const TLX = percX(document.getElementById("topleft").offsetLeft, scale);
   const TLY = percY(document.getElementById("topleft").offsetTop, scale);
   const TRX = percX(document.getElementById("topright").offsetLeft, scale);
