@@ -1,5 +1,4 @@
-import { app, remote, BrowserWindow, dialog } from "electron";
-import { exec } from "child_process";
+import { app, remote, BrowserWindow, dialog, ipcMain } from "electron";
 import * as path from "path";
 import { Coordinates, Config, State } from "./types";
 import { initialize } from "./setup";
@@ -19,7 +18,7 @@ const imageConverter = new ImageConverter();
 
 initialize(config);
 
-const getFileFromUser = (exports.getFileFromUser = (): void => {
+export const getFileFromUser = (): void => {
   const files: string[] = dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow()!,
     {
@@ -32,7 +31,14 @@ const getFileFromUser = (exports.getFileFromUser = (): void => {
   const file: string = files[0];
   state.activeSourceFile = file;
   openFile(file);
-});
+};
+
+ipcMain.on(
+  "get-file-from-user",
+  (): void => {
+    getFileFromUser();
+  }
+);
 
 const saveFileTo = (): string => {
   const file: string = dialog.showSaveDialog(
@@ -46,7 +52,7 @@ const saveFileTo = (): string => {
   return file;
 };
 
-const openFile = (exports.openFile = (file: string): void => {
+const openFile = (file: string): void => {
   const previewFileName = "tmp_sbprev_" + path.basename(file);
   state.activeSourceFile = file;
   state.activePreviewFile = path.join(config.filePath, previewFileName);
@@ -58,36 +64,59 @@ const openFile = (exports.openFile = (file: string): void => {
         file,
         null
       );
+    })
+    .catch(err => {
+      console.log("Error on resizing Image: ", err);
     });
+};
+
+ipcMain.on("open-file", (_data, path: string) => {
+  openFile(path);
 });
 
-const convertFull = (exports.convertFull = (
-  coords: Coordinates,
-  nw: number,
-  nh: number
-): void => {
+const convertFull = (coords: Coordinates, nw: number, nh: number): void => {
   const file = saveFileTo();
   console.log("CONVERT FULL", file);
   imageConverter
-    .unskewImage(file, coords, nw, nh, state.activeSourceFile)
+    .unskewImage(state.activeSourceFile, coords, nw, nh, file)
     .then(() => {
       console.log("Conversion Done!");
+    })
+    .catch(err => {
+      console.log("Cenvert Full Error:", err);
     });
-});
+};
 
-const convertPreview = (exports.convertPreview = (
+ipcMain.on(
+  "convert-full",
+  (_data, coords: Coordinates, nw: number, nh: number) => {
+    convertFull(coords, nw, nh);
+  }
+);
+
+const convertPreview = (
   targetFileName: string,
   coords: Coordinates,
   nw: number,
   nh: number
 ): void => {
-  const fullSourceFilePath = path.join(config.filePath, targetFileName);
+  const fullTargetFilePath = path.join(config.filePath, targetFileName);
   imageConverter
-    .unskewImage(fullSourceFilePath, coords, nw, nh, state.activePreviewFile)
+    .unskewImage(state.activePreviewFile, coords, nw, nh, fullTargetFilePath)
     .then(() => {
       BrowserWindow.getFocusedWindow()!.webContents.send(
         "file-saved",
-        fullSourceFilePath
+        fullTargetFilePath
       );
+    })
+    .catch(err => {
+      console.log("Convert Preview Error:", err);
     });
-});
+};
+
+ipcMain.on(
+  "convert-preview",
+  (_data, path: string, coords: Coordinates, nw: number, nh: number) => {
+    convertPreview(path, coords, nw, nh);
+  }
+);

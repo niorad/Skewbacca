@@ -60,19 +60,19 @@ describe("Image Converter", function() {
     assert.equal(resizeCommand, idealCommand);
   });
 
-  it("un-skews image successfully", function(done) {
+  it("Unskewing generates a new image", function(done) {
     const imageConverter: ImageConverter = new ImageConverter();
     const testSourceImage: string = path.join(assetsPath, "test.jpg");
     const testDestinationImage: string = path.join(tempPath, "test.jpg");
     const coords: Coordinates = {
-      TLX: 10,
-      TLY: 10,
-      BLX: 10,
-      BLY: 100,
-      BRY: 100,
-      BRX: 100,
-      TRX: 100,
-      TRY: 10
+      TLX: 100,
+      TLY: 100,
+      BLX: 450,
+      BLY: 850,
+      BRX: 900,
+      BRY: 700,
+      TRX: 800,
+      TRY: 200
     };
     imageConverter
       .unskewImage(testSourceImage, coords, 1000, 1000, testDestinationImage)

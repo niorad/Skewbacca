@@ -50,8 +50,10 @@ export class ImageConverter {
         this.generateResizeCommand(source, sizeInPercent, target),
         (err, stdout, stderr) => {
           if (err) {
+            console.log("ResizeImage Error: ", err);
             rej(stderr);
           } else {
+            console.log("ResizeImage Success!");
             res(stdout);
           }
         }
@@ -71,8 +73,10 @@ export class ImageConverter {
         this.generateUnskewCommand(source, coords, width, height, target),
         (err, stdout, stderr) => {
           if (err) {
+            console.log("UnskewImage Error: ", err);
             rej(stderr);
           } else {
+            console.log("UnskewImage Success!");
             res(stdout);
           }
         }

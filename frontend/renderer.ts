@@ -1,12 +1,13 @@
-const { remote, ipcRenderer } = require("electron");
-const rndstr = require("randomstring");
-const mainProcess = remote.require("./bundle.js");
+import { ipcRenderer } from "electron";
+import rndstr from "randomstring";
 
 const handles = document.querySelectorAll(".handle");
 const handleWrapper = document.getElementById("handle-wrapper");
-const mainImageContainer = document.getElementById("main-image");
-const stage = document.getElementById("stage");
-const canvas = document.getElementById("lines");
+const mainImageContainer = <HTMLImageElement>(
+  document.getElementById("main-image")
+);
+const stage = <HTMLDivElement>document.getElementById("stage");
+const canvas = <HTMLCanvasElement>document.getElementById("lines");
 const ctx = canvas.getContext("2d");
 
 stage.addEventListener("dragover", e => {
@@ -32,10 +33,8 @@ stage.addEventListener("dragend", e => {
 
 stage.addEventListener("drop", e => {
   const file = e.dataTransfer.files[0];
-
   if (["image/jpeg"].includes(file.type)) {
-    mainProcess.openFile(file.path);
-    openFile(file.path);
+    ipcRenderer.send("open-file", file.path);
   } else {
     alert("No bueno!");
   }
@@ -45,18 +44,23 @@ stage.addEventListener("drop", e => {
 });
 
 function convertCurrentSelection() {
-  const nw = document.getElementById("main-image").naturalWidth;
-  const nh = document.getElementById("main-image").naturalHeight;
-  mainProcess.convertFull(getSkewCoordinates(1), nw, nh);
+  const nw = (<HTMLImageElement>document.getElementById("main-image"))
+    .naturalWidth;
+  const nh = (<HTMLImageElement>document.getElementById("main-image"))
+    .naturalHeight;
+  ipcRenderer.send("convert-full", getSkewCoordinates(1), nw, nh);
 }
 
 function previewCurrentSelection() {
-  document.getElementById("preview-image").src = "";
+  (<HTMLImageElement>document.getElementById("preview-image")).src = "";
   document.getElementById("preview-image").classList.add("pending");
   document.getElementById("preview-spinner").classList.add("active");
-  const nw = document.getElementById("main-image").naturalWidth;
-  const nh = document.getElementById("main-image").naturalHeight;
-  mainProcess.convertPreview(
+  const nw = (<HTMLImageElement>document.getElementById("main-image"))
+    .naturalWidth;
+  const nh = (<HTMLImageElement>document.getElementById("main-image"))
+    .naturalHeight;
+  ipcRenderer.send(
+    "convert-preview",
     `skewbacca_${rndstr.generate(8)}.jpg`,
     getSkewCoordinates(0.2),
     nw * 0.2,
@@ -64,7 +68,7 @@ function previewCurrentSelection() {
   );
 }
 
-function openFile(file) {
+function openFile(file: string) {
   mainImageContainer.src = file;
   mainImageContainer.addEventListener("dragstart", e => {
     e.preventDefault();
@@ -72,8 +76,8 @@ function openFile(file) {
 
   handleWrapper.style.opacity = "1";
   setTimeout(() => {
-    canvas.setAttribute("width", handleWrapper.offsetWidth);
-    canvas.setAttribute("height", handleWrapper.offsetHeight);
+    canvas.setAttribute("width", `${handleWrapper.offsetWidth}`);
+    canvas.setAttribute("height", `${handleWrapper.offsetHeight}`);
     drawLines();
   }, 10);
 }
@@ -82,7 +86,7 @@ ipcRenderer.on("log", (_, log, __) => {
   console.log(log);
 });
 
-ipcRenderer.on("file-opened", (event, file, content) => {
+ipcRenderer.on("file-opened", (_event, file, _content) => {
   openFile(file);
 });
 
@@ -90,34 +94,40 @@ ipcRenderer.on("save-intent", convertCurrentSelection);
 
 ipcRenderer.on("file-saved", (event, targetFileName) => {
   console.log(targetFileName);
-  document.getElementById("preview-image").src = targetFileName;
+  (<HTMLImageElement>(
+    document.getElementById("preview-image")
+  )).src = targetFileName;
   document.getElementById("preview-image").classList.remove("pending");
   document.getElementById("preview-spinner").classList.remove("active");
 });
 
 handles.forEach(handle => {
-  handle.addEventListener("dragend", e => {
+  handle.addEventListener("dragend", (e: DragEvent) => {
     if (!e.pageX && !e.pageY) return;
-    e.target.style.left = e.pageX - handleWrapper.offsetLeft + "px";
-    e.target.style.top = e.pageY - handleWrapper.offsetTop + "px";
-    e.target.classList.remove("dragged");
+    (<HTMLButtonElement>e.target).style.left =
+      e.pageX - handleWrapper.offsetLeft + "px";
+    (<HTMLButtonElement>e.target).style.top =
+      e.pageY - handleWrapper.offsetTop + "px";
+    (<HTMLButtonElement>e.target).classList.remove("dragged");
     previewCurrentSelection();
   });
-  handle.addEventListener("drag", e => {
+  handle.addEventListener("drag", (e: DragEvent) => {
     if (!e.pageX && !e.pageY) return;
-    e.target.style.left = e.pageX - handleWrapper.offsetLeft + "px";
-    e.target.style.top = e.pageY - handleWrapper.offsetTop + "px";
+    (<HTMLButtonElement>e.target).style.left =
+      e.pageX - handleWrapper.offsetLeft + "px";
+    (<HTMLButtonElement>e.target).style.top =
+      e.pageY - handleWrapper.offsetTop + "px";
     drawLines();
   });
-  handle.addEventListener("dragstart", e => {
+  handle.addEventListener("dragstart", (e: DragEvent) => {
     const img = document.createElement("span");
     img.style.display = "none";
     e.dataTransfer.setDragImage(img, 0, 0);
-    e.target.classList.add("dragged");
+    (<HTMLButtonElement>e.target).classList.add("dragged");
   });
 });
 
-function getSkewCoordinates(scale) {
+function getSkewCoordinates(scale: number) {
   const TLX = percX(document.getElementById("topleft").offsetLeft, scale);
   const TLY = percY(document.getElementById("topleft").offsetTop, scale);
   const TRX = percX(document.getElementById("topright").offsetLeft, scale);
@@ -130,12 +140,14 @@ function getSkewCoordinates(scale) {
 }
 
 function percX(n, scale) {
-  const nat = document.getElementById("main-image").naturalWidth;
+  const nat = (<HTMLImageElement>document.getElementById("main-image"))
+    .naturalWidth;
   return (n / handleWrapper.getBoundingClientRect().width) * (nat * scale);
 }
 
 function percY(n, scale) {
-  const nat = document.getElementById("main-image").naturalHeight;
+  const nat = (<HTMLImageElement>document.getElementById("main-image"))
+    .naturalHeight;
   return (n / handleWrapper.getBoundingClientRect().height) * (nat * scale);
 }
 

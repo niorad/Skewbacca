@@ -1,6 +1,5 @@
 import { BrowserWindow, app } from "electron";
-
-const mainProcess = require("./main.ts");
+import { getFileFromUser } from "./main";
 
 const getMenuTemplate = (
   mainWindow: BrowserWindow
@@ -28,7 +27,7 @@ const getMenuTemplate = (
         label: "Open…",
         accelerator: "CmdOrCtrl+O",
         click: function() {
-          mainProcess.getFileFromUser();
+          getFileFromUser();
         }
       },
       {
