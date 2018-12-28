@@ -33,13 +33,6 @@ export const getFileFromUser = (): void => {
   openFile(file);
 };
 
-ipcMain.on(
-  "get-file-from-user",
-  (): void => {
-    getFileFromUser();
-  }
-);
-
 const saveFileTo = (): string => {
   const file: string = dialog.showSaveDialog(
     BrowserWindow.getFocusedWindow()!,
