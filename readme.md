@@ -1,5 +1,8 @@
 # Skewbacca
 
+**I rewrote this in Swift, so it will probably never be updated again**
+https://github.com/niorad/Skewbacca-Native
+
 by niorad for [DevLids.com](https://DevLids.com)
 
 An electron-app to quickly un-skew laptop-lids from photos, and create a file which is ready for usage on DevLids.
